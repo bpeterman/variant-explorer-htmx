@@ -1,0 +1,58 @@
+{% extends "variant_explorer/base.html" %}
+
+{% block content %}
+<div
+  x-data="{ loading: false }"
+  @htmx:before-request="loading = true"
+  @htmx:after-request="loading = false"
+>
+  <div class="gene-search-container">
+    <form
+      hx-get="{% url 'variant_rows' %}"
+      hx-target="#variant-table-body"
+      hx-swap="outerHTML"
+      hx-trigger="keyup changed delay:300ms from:input[name=search], submit"
+      hx-push-url="false"
+      onsubmit="return false;"
+      class="gene-search-form"
+    >
+      <label for="gene-search-input" class="visually-hidden">Search by gene</label>
+      <input
+        id="gene-search-input"
+        name="search"
+        type="search"
+        placeholder="Search by gene"
+        value="{{ search|default_if_none:'' }}"
+        autocomplete="off"
+        class="gene-search-input"
+      />
+      <span class="gene-search-hint">(type to search)</span>
+      <span
+        class="spinner"
+        x-show="loading"
+        x-cloak
+        aria-hidden="true"
+      ></span>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table class="variant-table">
+      <thead>
+        <tr>
+          <th>Gene</th>
+          <th>Nucleotide Change</th>
+          <th>Protein Change</th>
+          <th>Alias</th>
+          <th>Region</th>
+          <th>Reported Classification</th>
+          <th>Last Evaluated</th>
+          <th>Last Updated</th>
+          <th>More Info</th>
+        </tr>
+      </thead>
+      {% include "variant_explorer/_variant_rows.html" %}
+    </table>
+  </div>
+</div>
+{% endblock %}
